@@ -112,7 +112,10 @@ export const updateRideStatus = async (req, res) => {
   }
 
   try {
-    let ride = await Ride.findById(rideId).populate("customer rider");
+    let ride = await Ride.findOne({
+      _id: rideId,
+      $or: [{ customer: req.user.id }, { rider: req.user.id }],
+    }).populate("customer rider");
 
     if (!ride) {
       throw new NotFoundError("Ride not found");
